@@ -1,0 +1,53 @@
+
+
+version: '3.1'
+
+services:
+  proxy:
+    image: traefik:1.4
+    command: --web --docker --docker.domain=ec2-54-89-177-25.compute-1.amazonaws.com --logLevel=INFO
+    networks:
+      - webgateway
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /dev/null:/traefik.toml
+    restart:
+      always
+  backdarksky:
+    image: backdarksky
+    expose: [5000]
+    networks:
+      - webgateway
+    labels:
+      - "traefik.enable=true"
+      - "traefik.port=5000"
+      - "traefik.backend=backdarksky"
+      - "traefik.frontend.redirect.regex=(*.)/api/(*.)"
+      - "traefik.frontend.redirect.replacement=$$1:5000/$$2"
+      - "traefik.frontend.rule=Host:ec2-54-89-177-25.compute-1.amazonaws.com; PathPrefixStrip:/api"
+      - "traefik.frontend.priority=51"
+    restart:
+      always
+  frontdarksky:
+    image: frontdarksky
+    expose: [3006]
+    networks:
+      - webgateway
+    labels:
+      - "traefik.enable=true"
+      - "traefik.port=3006"
+      - "traefik.backend=frontdarksky"
+      - "traefik.frontend.rule=Host:ec2-54-89-177-25.compute-1.amazonaws.com"
+      - "traefik.frontend.priority=50"
+    restart:
+      always
+networks:
+  web:
+    external:
+      name: traefik_webgateway
+  webgateway:
+     driver: bridge
+
