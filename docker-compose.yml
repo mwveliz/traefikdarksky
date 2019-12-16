@@ -5,7 +5,7 @@ version: '3.1'
 services:
   proxy:
     image: traefik:1.4
-    command: --web --docker --docker.domain=ec2-54-89-177-25.compute-1.amazonaws.com --logLevel=INFO
+    command: --web --docker --docker.domain=localhost --logLevel=INFO
     networks:
       - webgateway
     ports:
@@ -28,7 +28,7 @@ services:
       - "traefik.backend=backdarksky"
       - "traefik.frontend.redirect.regex=(*.)/api/(*.)"
       - "traefik.frontend.redirect.replacement=$$1:5000/$$2"
-      - "traefik.frontend.rule=locahost; PathPrefixStrip:/api"
+      - "traefik.frontend.rule=Host:locahost; PathPrefixStrip:/api"
       - "traefik.frontend.priority=51"
     restart:
       always
