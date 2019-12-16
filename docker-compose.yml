@@ -17,7 +17,8 @@ services:
     restart:
       always
   backdarksky:
-    image: backdarksky
+    build:
+      context: ../backdarksky
     expose: [5000]
     networks:
       - webgateway
@@ -27,12 +28,13 @@ services:
       - "traefik.backend=backdarksky"
       - "traefik.frontend.redirect.regex=(*.)/api/(*.)"
       - "traefik.frontend.redirect.replacement=$$1:5000/$$2"
-      - "traefik.frontend.rule=Host:ec2-54-89-177-25.compute-1.amazonaws.com; PathPrefixStrip:/api"
+      - "traefik.frontend.rule=locahost; PathPrefixStrip:/api"
       - "traefik.frontend.priority=51"
     restart:
       always
   frontdarksky:
-    image: frontdarksky
+    build: 
+      context: ../frontdarksky
     expose: [3006]
     networks:
       - webgateway
@@ -40,7 +42,7 @@ services:
       - "traefik.enable=true"
       - "traefik.port=3006"
       - "traefik.backend=frontdarksky"
-      - "traefik.frontend.rule=Host:ec2-54-89-177-25.compute-1.amazonaws.com"
+      - "traefik.frontend.rule=Host:localhost"
       - "traefik.frontend.priority=50"
     restart:
       always
