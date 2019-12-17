@@ -19,6 +19,8 @@ services:
   backdarksky:
     build:
       context: ../backdarksky
+    ports:
+      - "5000:5000"
     expose: [5000]
     networks:
       - webgateway
@@ -29,7 +31,7 @@ services:
       - "traefik.frontend.redirect.regex=(*.)/api/(*.)"
       - "traefik.frontend.redirect.replacement=$$1:5000/$$2"
       - "traefik.frontend.rule=Host:locahost; PathPrefixStrip:/api"
-      - "traefik.frontend.priority=51"
+      - "traefik.frontend.priority=49"
     restart:
       always
   frontdarksky:
